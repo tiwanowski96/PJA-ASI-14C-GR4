@@ -2,13 +2,12 @@ from typing import Tuple
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import RandomizedSearchCV
 from sklearn.model_selection import cross_val_score
-import matplotlib.pyplot as plt
 import numpy as np
 import math
 
 # Input: model, 2 numpy arrays that contains test feature and targets
-# Output: Model metrics
-def get_model_metrics(model, X_test: np.ndarray, y_test: np.ndarray) -> Tuple[plt.figure, float, float, float, float]:
+# Output: Model predictions, metrics: mae, mse, rmse, r2
+def get_model_metrics(model, X_test: np.ndarray, y_test: np.ndarray) -> Tuple[np.ndarray, float, float, float, float]:
 
     model_predict = model.predict(X_test)
 
@@ -17,12 +16,7 @@ def get_model_metrics(model, X_test: np.ndarray, y_test: np.ndarray) -> Tuple[pl
     rmse = math.sqrt(mse)
     r2 = r2_score(y_test, model_predict)
 
-    fig, ax = plt.subplot()
-    ax.scatter(y_test, model_predict, alpha=0.5)
-    ax.xlabel("Real Values")
-    ax.ylabel("predicted values")
-
-    return fig, mae, mse, rmse, r2
+    return model_predict, mae, mse, rmse, r2
 
 # Input: model, 2 numpy arrays that contains train feature and targets
 # Output: Cross validation scores, mean and devation
