@@ -1,6 +1,6 @@
 import pandas as pd
 
-def clean_Data(dataframe) -> pd.DataFrame:
+def clean_Data(dataframe: pd.DataFrame) -> pd.DataFrame:
 
     if len(dataframe) == 0:
         print("Error: The data is empty.")

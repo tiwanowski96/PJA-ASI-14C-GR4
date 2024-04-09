@@ -30,6 +30,7 @@ def prepare_cleaned_data(data_cleaned: pd.DataFrame) -> pd.DataFrame:
     encoded_data = label_encoder.fit_transform(data_cleaned[cols_to_encode[0]].values)
     encoded_dataframe = pd.DataFrame(encoded_data, columns=cols_to_encode)
     prepared_dataframe = pd.concat([encoded_dataframe, scaled_dataframe.drop(columns=cols_to_encode)], axis=1)
+    
 
     return prepared_dataframe
 
