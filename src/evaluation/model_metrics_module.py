@@ -1,13 +1,15 @@
 from typing import Tuple
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 from sklearn.model_selection import RandomizedSearchCV
+from sklearn.linear_model import Ridge
+from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import cross_val_score
 import numpy as np
 import math
 
 # Input: model, 2 numpy arrays that contains test feature and targets
 # Output: Model predictions, metrics: mae, mse, rmse, r2
-def get_model_metrics(model, X_test: np.ndarray, y_test: np.ndarray) -> Tuple[np.ndarray, float, float, float, float]:
+def get_model_metrics(model: RandomForestRegressor | Ridge, X_test: np.ndarray, y_test: np.ndarray) -> Tuple[np.ndarray, float, float, float, float]:
 
     model_predict = model.predict(X_test)
 
@@ -20,7 +22,7 @@ def get_model_metrics(model, X_test: np.ndarray, y_test: np.ndarray) -> Tuple[np
 
 # Input: model, 2 numpy arrays that contains train feature and targets
 # Output: Cross validation scores, mean and devation
-def get_cross_validation_metrics(model, X_train: np.ndarray, y_train: np.ndarray) -> Tuple[np.ndarray, float, float]:
+def get_cross_validation_metrics(model: RandomForestRegressor | Ridge, X_train: np.ndarray, y_train: np.ndarray) -> Tuple[np.ndarray, float, float]:
 
     scores = cross_val_score(model, X_train, y_train, cv=5)
 
