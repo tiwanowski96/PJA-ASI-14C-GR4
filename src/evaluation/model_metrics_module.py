@@ -9,7 +9,18 @@ import math
 
 # Input: model, 2 numpy arrays that contains test feature and targets
 # Output: Model predictions, metrics: mae, mse, rmse, r2
-def get_model_metrics(model: RandomForestRegressor | Ridge, X_test: np.ndarray, y_test: np.ndarray) -> Tuple[np.ndarray, float, float, float, float]:
+def get_model_metrics(model: RandomForestRegressor, X_test: np.ndarray, y_test: np.ndarray) -> Tuple[np.ndarray, float, float, float, float]:
+
+    model_predict = model.predict(X_test)
+
+    mae = mean_absolute_error(y_test, model_predict)
+    mse = mean_squared_error(y_test, model_predict)
+    rmse = math.sqrt(mse)
+    r2 = r2_score(y_test, model_predict)
+
+    return model_predict, mae, mse, rmse, r2
+
+def get_model_metrics(model: Ridge, X_test: np.ndarray, y_test: np.ndarray) -> Tuple[np.ndarray, float, float, float, float]:
 
     model_predict = model.predict(X_test)
 
@@ -22,7 +33,13 @@ def get_model_metrics(model: RandomForestRegressor | Ridge, X_test: np.ndarray, 
 
 # Input: model, 2 numpy arrays that contains train feature and targets
 # Output: Cross validation scores, mean and devation
-def get_cross_validation_metrics(model: RandomForestRegressor | Ridge, X_train: np.ndarray, y_train: np.ndarray) -> Tuple[np.ndarray, float, float]:
+def get_cross_validation_metrics(model: RandomForestRegressor, X_train: np.ndarray, y_train: np.ndarray) -> Tuple[np.ndarray, float, float]:
+
+    scores = cross_val_score(model, X_train, y_train, cv=5)
+
+    return scores, scores.mean(), scores.std()
+
+def get_cross_validation_metrics(model: Ridge, X_train: np.ndarray, y_train: np.ndarray) -> Tuple[np.ndarray, float, float]:
 
     scores = cross_val_score(model, X_train, y_train, cv=5)
 
