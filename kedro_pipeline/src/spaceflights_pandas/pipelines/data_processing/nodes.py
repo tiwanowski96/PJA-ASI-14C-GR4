@@ -7,8 +7,21 @@ from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
 
 
-# Input: dataframe with clean data 
-# Output: dataframe with standardization and encoded data
+def clean_Data(dataframe: pd.DataFrame) -> pd.DataFrame:
+
+    if len(dataframe) == 0:
+        print("Error: The data is empty.")
+        return None
+
+    dataframe = dataframe[dataframe['Viscera Weight'] < 17.5]
+    dataframe = dataframe[dataframe['Shell Weight'] <= 24]
+    dataframe = dataframe[dataframe['Shucked Weight'] <= 36]
+    dataframe = dataframe[dataframe['Weight'] <= 78]
+    dataframe = dataframe[dataframe['Height'] < 1]
+    dataframe.reset_index(drop=True, inplace=True)
+    return dataframe
+
+
 def prepare_cleaned_data(data_cleaned: pd.DataFrame) -> pd.DataFrame:
 
     # standarization part
@@ -30,6 +43,7 @@ def prepare_cleaned_data(data_cleaned: pd.DataFrame) -> pd.DataFrame:
     encoded_data = label_encoder.fit_transform(data_cleaned[cols_to_encode[0]].values)
     encoded_dataframe = pd.DataFrame(encoded_data, columns=cols_to_encode)
     prepared_dataframe = pd.concat([encoded_dataframe, scaled_dataframe.drop(columns=cols_to_encode)], axis=1)
+    
 
     return prepared_dataframe
 
@@ -59,13 +73,4 @@ def enrich_ridge_features(dataframe: pd.DataFrame) -> pd.DataFrame:
 
     return dataframe
 
-# Input: dataframe, name of target column
-# Output: numpy arrays containing splitted data as X_train, X_test, y_train, y_test
-def split_data(prepared_dataframe: pd.DataFrame, target_name: str, in_test_size=0.35, in_random_state=0) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
 
-    feature = prepared_dataframe.drop(columns=[target_name])
-    target = prepared_dataframe[target_name]
-
-    X_train, X_test, y_train, y_test =  train_test_split(feature, target, test_size=in_test_size, random_state=in_random_state)
-
-    return X_train, X_test, y_train, y_test
