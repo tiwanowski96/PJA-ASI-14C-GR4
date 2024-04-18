@@ -161,3 +161,4 @@ cython_debug/
 
 kedro_pipeline/data/**
 !kedro_pipeline/data/**/
+!.gitkeep
