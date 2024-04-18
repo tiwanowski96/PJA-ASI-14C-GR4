@@ -3,14 +3,21 @@ model_options:
   test_size: "${runtime_params:test_size, 0.2}"
   random_state: "${runtime_params:random_state, 3}"
   features:
-    - engines
-    - passenger_capacity
-    - crew
-    - d_check_complete
-    - moon_clearance_complete
-    - iata_approved
-    - company_rating
-    - review_scores_rating
+    - Sex
+    - Length
+    - Diameter
+    - Height
+    - Weight
+    - Shucked Weight
+    - Viscera Weight
+    - Shell Weight
+    - Age
+    - Volume
+    - Weight proportion
+    - Shucked proportion
+    - Viscera proportion
+    - Shell proportion
+    - Shell area
   # create_rf_model parameters
   max_depth: "${runtime_params:max_depth, Null}"
   max_features: "${runtime_params:max_features, 1.0}"
