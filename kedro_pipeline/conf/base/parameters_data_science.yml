@@ -2,11 +2,17 @@ model_options:
   test_size: 0.2
   random_state: 3
   features:
-    - engines
-    - passenger_capacity
-    - crew
-    - d_check_complete
-    - moon_clearance_complete
-    - iata_approved
-    - company_rating
-    - review_scores_rating
+    - Sex
+    - Length
+    - Diameter
+    - Height
+    - Weight
+    - Shucked Weight
+    - Viscera Weight
+    - Shell Weight
+    - Volume
+    - Weight proportion
+    - Shucked proportion
+    - Viscera proportion
+    - Shell proportion
+    - Shell area
