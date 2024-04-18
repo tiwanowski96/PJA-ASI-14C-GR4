@@ -34,5 +34,5 @@ def get_model_metrics(model: RandomForestRegressor, X_test: np.ndarray, y_test: 
     r2 = r2_score(y_test, model_predict)
 
     logger = logging.getLogger(__name__)
-    logger.info(f"Mae: {mae}\n Mse: {mse} \n RMSE: {rmse} \n R2: {r2}")
+    logger.info(f"Mae: {mae}\nMse: {mse} \nRMSE: {rmse} \nR2: {r2}")
 

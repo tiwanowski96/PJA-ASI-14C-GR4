@@ -14,7 +14,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=create_rf_model,
-                inputs=["X_train", "y_train"],
+                inputs=["X_train", "y_train", "params:model_options"],
                 outputs="random_forest",
                 name="train_model_node",
             )

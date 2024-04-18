@@ -1,6 +1,7 @@
 model_options:
-  test_size: 0.2
-  random_state: 3
+  # split_data parameters
+  test_size: "${runtime_params:test_size, 0.2}"
+  random_state: "${runtime_params:random_state, 3}"
   features:
     - engines
     - passenger_capacity
@@ -10,3 +11,9 @@ model_options:
     - iata_approved
     - company_rating
     - review_scores_rating
+  # create_rf_model parameters
+  max_depth: "${runtime_params:max_depth, Null}"
+  max_features: "${runtime_params:max_features, 1.0}"
+  n_estimators: "${runtime_params:n_estimators, 100}"
+  min_samples_leaf: "${runtime_params:min_samples_leaf, 1}"
+  min_samples_split: "${runtime_params:min_samples_split, 2}"
