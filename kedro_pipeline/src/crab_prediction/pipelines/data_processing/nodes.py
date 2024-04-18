@@ -1,7 +1,5 @@
 import pandas as pd
-import numpy as np
 import math
-from typing import Tuple
 from sklearn.preprocessing import StandardScaler
 from sklearn.preprocessing import LabelEncoder
 from sklearn.model_selection import train_test_split
@@ -58,18 +56,6 @@ def enrich_rf_features(dataframe: pd.DataFrame) -> pd.DataFrame:
     dataframe["Viscera proportion"] = dataframe["Viscera Weight"] / dataframe["Weight"]
     dataframe["Shell proportion"] = dataframe["Shell Weight"] / dataframe["Weight"]
     dataframe["Shell area"] = (dataframe["Diameter"] / 2)**2 * math.pi
-
-    return dataframe
-
-# Input: dataframe for ridge
-# Output: dataframe with new features
-def enrich_ridge_features(dataframe: pd.DataFrame) -> pd.DataFrame:
-
-    dataframe["Volume"] = dataframe["Length"] * dataframe["Height"] * dataframe["Diameter"]
-    dataframe["Weight proportion"] = (dataframe["Shucked Weight"] + dataframe["Viscera Weight"] + dataframe["Shell Weight"]) / dataframe["Weight"]
-    dataframe["Shucked proportion"] = dataframe["Shucked Weight"] / dataframe["Weight"]
-    dataframe["Viscera proportion"] = dataframe["Viscera Weight"] / dataframe["Weight"]
-    dataframe["Shell proportion"] = dataframe["Shell Weight"] / dataframe["Weight"]
 
     return dataframe
 
