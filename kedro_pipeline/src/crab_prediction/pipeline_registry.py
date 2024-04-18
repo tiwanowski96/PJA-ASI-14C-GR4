@@ -4,9 +4,9 @@ from typing import Dict
 from kedro.framework.project import find_pipelines
 from kedro.pipeline import Pipeline
 
-import spaceflights_pandas.pipelines.data_science as ds
-import spaceflights_pandas.pipelines.data_processing as dp
-import spaceflights_pandas.pipelines.model_evaluation as me
+import crab_prediction.pipelines.data_science as ds
+import crab_prediction.pipelines.data_processing as dp
+import crab_prediction.pipelines.model_evaluation as me
 
 
 def register_pipelines() -> Dict[str, Pipeline]:
