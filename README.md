@@ -12,9 +12,9 @@
 3. W terminalu wykonaj polecenie `conda env create -f environment.yml`
 4. Uruchom utworzone środowisko wykonując polecenie `conda activate ASI`
 
-<h2>Crab age prediction model</h2>
+<h2>Model przewidujący wiek kraba</h2>
 
-<p>The model here created will be able to predict crab age based on given biometrics and sex. Model will take as input features listed below:</p>
+<p>Stworzony model ma za zadnie przewidzieć wiek kraba na bazie dnych biometrycznych oraz płci. Poniżej znajduje się lista cech znajduących się w bazowych danych i krótki opis:</p>
 
 <ul>
     <li>Sex -> String; Values=['I','M','F']</li>
@@ -27,8 +27,8 @@
     <li>Shell Weight -> float</li>
 </ul>
 
-<p>The target will be Age value that type is int. We will use Random forest model.</p>
+<p>Naszym celem będzie przewidzić wartość Age, która jest typem intger. Użyjemy do tego modelu Random forest.</p>
 
-<p>For data cleaning look up file data_analysis.ipynb</p>
+<p>Jeśli chcesz sprawdzić jak zostało przeprowadzone pierwotne czyszczenie danych sprawdź model_origin\data_analysis.ipynb</p>
 
-<p>For model evaluation look up file model_eval.ipynb</p>
+<p>Jeśli chcesz sprawdzić pierwotną ewaluacje modeli sprawdź model_origin\model_eval.ipynb</p>
