@@ -14,7 +14,7 @@
 
 <h2>Model przewidujący wiek kraba</h2>
 
-<p>Stworzony model ma za zadnie przewidzieć wiek kraba na bazie dnych biometrycznych oraz płci. Poniżej znajduje się lista cech znajduących się w bazowych danych i krótki opis:</p>
+<p>Stworzony model ma za zadnie przewidzieć wiek kraba na bazie danych biometrycznych oraz płci. Poniżej znajduje się lista cech znajduących się w bazowych danych i krótki opis:</p>
 
 <ul>
     <li>Sex -> String; Values=['I','M','F']</li>
