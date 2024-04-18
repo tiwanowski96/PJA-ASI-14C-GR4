@@ -1,8 +1,5 @@
 import logging
-from typing import Tuple
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
-from sklearn.model_selection import RandomizedSearchCV
-from sklearn.linear_model import Ridge
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import cross_val_score
 import numpy as np

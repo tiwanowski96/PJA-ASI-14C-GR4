@@ -1,14 +1,9 @@
 import logging
 from typing import Dict, Tuple
 import numpy as np
-from sklearn.linear_model import Ridge
 from sklearn.ensemble import RandomForestRegressor
 import pandas as pd
-import math
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import r2_score
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 
 logger = logging.getLogger(__name__)
 
