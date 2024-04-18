@@ -72,4 +72,3 @@ enriched_rf_input_table:
 random_forest:
   type: pickle.PickleDataset
   filepath: data/06_models/random_forest.pickle
-  versioned: true
