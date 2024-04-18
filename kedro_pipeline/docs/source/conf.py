@@ -25,7 +25,7 @@ from spaceflights_pandas import __version__ as release
 
 # -- Project information -----------------------------------------------------
 
-project = "spaceflights_pandas"
+project = "crab_age_pandas"
 author = "Kedro"
 
 # The short X.Y version.
