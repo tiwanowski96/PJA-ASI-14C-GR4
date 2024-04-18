@@ -3,12 +3,12 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "spaceflights_pandas"
+name = "crab_prediction"
 readme = "README.md"
 dynamic = ["dependencies", "version"]
 
 [project.scripts]
-spaceflights-pandas = "spaceflights_pandas.__main__:main"
+crab_prediction = "crab_prediction.__main__:main"
 
 [project.entry-points."kedro.hooks"]
 
@@ -27,15 +27,15 @@ docs = [
 
 [tool.setuptools.dynamic]
 dependencies = {file = "requirements.txt"}
-version = {attr = "spaceflights_pandas.__version__"}
+version = {attr = "crab_prediction.__version__"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
 namespaces = false
 
 [tool.kedro]
-package_name = "spaceflights_pandas"
-project_name = "Spaceflights Pandas"
+package_name = "crab_prediction"
+project_name = "Crab prediction"
 kedro_init_version = "0.19.3"
 tools = ['None']
 example_pipeline = "False"
