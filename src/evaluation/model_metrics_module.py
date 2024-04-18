@@ -6,6 +6,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import cross_val_score
 import numpy as np
 import math
+import wandb
 
 # Input: model, 2 numpy arrays that contains test feature and targets
 # Output: Model predictions, metrics: mae, mse, rmse, r2
@@ -40,9 +41,24 @@ def get_cross_validation_metrics(model: RandomForestRegressor, X_train: np.ndarr
     return scores, scores.mean(), scores.std()
 
 def get_cross_validation_metrics(model: Ridge, X_train: np.ndarray, y_train: np.ndarray) -> Tuple[np.ndarray, float, float]:
-
     scores = cross_val_score(model, X_train, y_train, cv=5)
-
+    for i, score in enumerate(scores):
+        # 🐝 1️⃣ Start a new run to track this script
+        wandb.init(
+            # Set the project where this run will be logged
+            project="basic-intro", 
+            # We pass a run name (otherwise it’ll be randomly assigned, like sunshine-lollypop-10)
+            name=f"experiment_{i}", 
+            # Track hyperparameters and run metadata
+            config={
+            "learning_rate": 0.02,
+            "architecture": model,
+            "dataset": "CrabAgePrediction",
+            "epochs": 1,
+            })
+        wandb.log({"score":score})
+# Mark the run as finished
+    wandb.finish()
     return scores, scores.mean(), scores.std()
 
 # Input: model parameter as dictionary, model, train feature, train target, iteration, cross validation iter, random state

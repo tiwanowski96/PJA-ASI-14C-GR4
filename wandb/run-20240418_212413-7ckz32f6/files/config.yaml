@@ -1,0 +1,47 @@
+wandb_version: 1
+
+learning_rate:
+  desc: null
+  value: 0.02
+architecture:
+  desc: null
+  value: "RandomForestRegressor(max_depth=7, max_features='sqrt', min_samples_leaf=2,\n\
+    \                      min_samples_split=6, n_estimators=215)"
+dataset:
+  desc: null
+  value: CrabAgePrediction
+epochs:
+  desc: null
+  value: 1
+_wandb:
+  desc: null
+  value:
+    python_version: 3.10.14
+    cli_version: 0.16.6
+    framework: sklearn
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    start_time: 1713468253.0
+    t:
+      1:
+      - 5
+      - 53
+      - 55
+      - 105
+      2:
+      - 5
+      - 53
+      - 55
+      - 105
+      3:
+      - 2
+      - 13
+      - 16
+      - 23
+      - 24
+      4: 3.10.14
+      5: 0.16.6
+      8:
+      - 3
+      - 5
+      13: windows-amd64
