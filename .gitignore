@@ -163,3 +163,4 @@ kedro_pipeline/data/**
 !kedro_pipeline/data/**/
 !.gitkeep
 wandb/** 
+kedro_pipeline/wandb/**
