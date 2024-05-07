@@ -40,7 +40,7 @@ def get_cross_validation_metrics(model: RandomForestRegressor, X_train: np.ndarr
     return scores, scores.mean(), scores.std()
 
 def get_cross_validation_metrics(model: Ridge, X_train: np.ndarray, y_train: np.ndarray) -> Tuple[np.ndarray, float, float]:
-
+    
     scores = cross_val_score(model, X_train, y_train, cv=5)
 
     return scores, scores.mean(), scores.std()
