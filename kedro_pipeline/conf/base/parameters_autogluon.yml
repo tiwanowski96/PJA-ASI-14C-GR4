@@ -1,0 +1,12 @@
+split_options:
+  # params for spliting data
+  test_size: "${runtime_params:test_size, 0.2}"
+  random_state: "${runtime_params:random_state, 42}"
+
+predictor_options:
+  # params for autogluon predictor
+  target_column: "${runtime_params:random_state, Age}"
+  path: "data\\06_models"
+  problem_type: "${runtime_params:random_state, regression}"
+  eval_metric: "${runtime_params:random_state, r2}"
+  presets: "${runtime_params:random_state, good_quality}"
