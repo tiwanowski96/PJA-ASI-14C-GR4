@@ -6,7 +6,6 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.model_selection import cross_val_score
 import numpy as np
 import math
-import wandb
 
 # Input: model, 2 numpy arrays that contains test feature and targets
 # Output: Model predictions, metrics: mae, mse, rmse, r2
