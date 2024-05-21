@@ -7,14 +7,14 @@
 - Tomasz Iwanowski s18438
 
 ## Instrukcja uruchomienia środowiska
-1. Pobierz i zainstaluj [Miniconda](https://docs.anaconda.com/free/miniconda/index.html)
-2. Pobierz plik `environment.yml` z katalogu `env`
-3. W terminalu wykonaj polecenie `conda env create -f environment.yml`
-4. Uruchom utworzone środowisko wykonując polecenie `conda activate ASI`
+1. Download and install [Miniconda](https://docs.anaconda.com/free/miniconda/index.html)
+2. Download file `environment.yml` from catalog `env`
+3. In terminal use command `conda env create -f environment.yml`
+4. Activate created environment using command `conda activate ASI`
 
-<h2>Model przewidujący wiek kraba</h2>
+<h2>Crab age prediction model</h2>
 
-<p>Stworzony model ma za zadnie przewidzieć wiek kraba na bazie danych biometrycznych oraz płci. Poniżej znajduje się lista cech znajduących się w bazowych danych i krótki opis:</p>
+<p>The model here created will be able to predict crab age based on given biometrics and sex. Model will take as input features listed below:</p>
 
 <ul>
     <li>Sex -> String; Values=['I','M','F']</li>
@@ -27,8 +27,8 @@
     <li>Shell Weight -> float</li>
 </ul>
 
-<p>Naszym celem będzie przewidzić wartość Age, która jest typem intger. Użyjemy do tego modelu Random forest.</p>
+<p>The target will be Age value that type is int. We will use Random forest model.</p>
 
-<p>Jeśli chcesz sprawdzić jak zostało przeprowadzone pierwotne czyszczenie danych sprawdź model_origin\data_analysis.ipynb</p>
+<p>For data cleaning look up file raw_pipeline\data_analysis.ipynb</p>
 
-<p>Jeśli chcesz sprawdzić pierwotną ewaluacje modeli sprawdź model_origin\model_eval.ipynb</p>
+<p>For model evaluation look up file raw_pipeline\model_eval.ipynb</p>
