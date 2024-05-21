@@ -10,7 +10,7 @@ from ml.model_creator_module import create_ridge_model, create_rf_model
 from evaluation.model_metrics_module import get_model_metrics, get_cross_validation_metrics, model_params_random_search
 
 if __name__ == '__main__':
-    crabs = import_dataframe_from_csv(path="model_data\CrabAgePrediction.csv")
+    crabs = import_dataframe_from_csv(path="data\CrabAgePrediction.csv")
     crabs = clean_Data(crabs)
     crabs.reset_index(drop=True, inplace=True)
     crabs = enrich_rf_features(crabs)
