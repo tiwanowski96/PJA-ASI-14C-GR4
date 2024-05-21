@@ -14,8 +14,8 @@ generated using Kedro 0.19.3
 
 def get_cross_validation_metrics(model: RandomForestRegressor, X_train: np.ndarray, y_train: np.ndarray):
 
-        # Launch 2 simulated experiments
-    total_runs = 2
+    # Launch 2 simulated experiments
+    total_runs = 1
     for run in range(total_runs):
     # 🐝 1️⃣ Start a new run to track this script
         wandb.init(
@@ -27,11 +27,11 @@ def get_cross_validation_metrics(model: RandomForestRegressor, X_train: np.ndarr
         config={
         "architecture": "RandomForestRegressor",
         "dataset": "CrabAgePrediction.csv",
-        "epochs": "10",
+        "epochs": "5",
         })
     
         # This simple block simulates a training loop logging metrics
-        epochs = 10
+        epochs = 5
 
         for epoch in range(epochs):
             scores = cross_val_score(model, X_train, y_train, cv=5)
