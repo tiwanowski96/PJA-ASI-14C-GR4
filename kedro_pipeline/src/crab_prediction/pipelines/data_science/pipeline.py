@@ -1,6 +1,6 @@
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import split_data, create_rf_model
+from .nodes import split_data, create_rf_model, get_cross_validation_metrics, get_model_metrics
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -17,6 +17,18 @@ def create_pipeline(**kwargs) -> Pipeline:
                 inputs=["X_train", "y_train", "params:model_options"],
                 outputs="random_forest",
                 name="train_model_node",
+            ),
+            node(
+                func=get_cross_validation_metrics,
+                inputs=["random_forest", "X_test", "y_test"],
+                outputs=None,
+                name="cross_validation_model_node",
+            ),
+            node(
+                func=get_model_metrics,
+                inputs=["random_forest", "X_test", "y_test"],
+                outputs=None,
+                name="evaluate_model_node",
             )
         ]
     )
