@@ -55,6 +55,8 @@ def evaluate_autogluon_model(predicator: TabularPredictor, test_set: pd.DataFram
     my_table = wandb.Table(columns=leaderboards_cols, data=leaderboards_rows)
     run.log({"Table Name": my_table})
 
+    wandb.finish()
+
     metrics_dic = predicator.evaluate(test_set, silent=True)
 
     logger.info(
