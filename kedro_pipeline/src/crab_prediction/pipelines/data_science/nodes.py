@@ -5,6 +5,7 @@ from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import pandas as pd
 import logging
 import numpy as np
+import os
 import math
 import wandb
 
@@ -55,10 +56,13 @@ def create_rf_model(X_train: np.ndarray, y_train: np.ndarray, parameters: Dict) 
 
 def get_cross_validation_metrics(model: RandomForestRegressor, X_train: np.ndarray, y_train: np.ndarray):
 
+    # Log in to W&B
+    wandb.login(key=os.getenv('WANDB_API_KEY'))
+
     # Launch 2 simulated experiments
     total_runs = 1
     for run in range(total_runs):
-    # 🐝 1️⃣ Start a new run to track this script
+        # 🐝 1️⃣ Start a new run to track this script
         wandb.init(
         # Set the project where this run will be logged
         project="CrabAgePredictionProject", 
