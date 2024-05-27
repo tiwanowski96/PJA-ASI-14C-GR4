@@ -64,7 +64,7 @@ def evaluate_autogluon_model(predicator: TabularPredictor, test_set: pd.DataFram
         f'Metrics: \n {metrics_dic}'
     )
 
-def split_data(prepared_dataframe: pd.DataFrame,parameters: Dict) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+def split_data_for_rf(prepared_dataframe: pd.DataFrame,parameters: Dict) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
 
     logger.info(
         f'Used parameters:\n \
@@ -169,15 +169,94 @@ def champion_loader(my_bools: bool) -> Dict[str, Any]:
     
     return True
    
-def compare_models(my_bool:bool,automl_challenger: dict,random_challenger: dict) -> None:
-    champion_accuracy = 0.90#champion['accuracy']
-    if my_bool==True:
-        challenger_accuracy = automl_challenger['accuracy']
-    else:
-        challenger_accuracy = random_challenger['accuracy']
+# def compare_models(my_bool:bool,automl_challenger: dict,random_challenger: dict) -> None:
+#     champion_accuracy = 0.90#champion['accuracy']
+#     if my_bool==True:
+#         challenger_accuracy = automl_challenger['accuracy']
+#     else:
+#         challenger_accuracy = random_challenger['accuracy']
 
-    if challenger_accuracy > champion_accuracy:
-        logger.info("Challenger model is better than the champion model.")
+#     if challenger_accuracy > champion_accuracy:
+#         logger.info("Challenger model is better than the champion model.")
+#     else:
+#         logger.info("Challenger model is not better than the champion model.")
+#     pass
+
+
+def split_data(prepared_dataframe: pd.DataFrame,parameters: Dict) -> list:
+    train, test = split_data_for_autogluon(prepared_dataframe, parameters)
+    X_train, X_test, y_train, y_test = split_data_for_rf(prepared_dataframe, parameters)
+    datasets_list = [train, test, X_train, X_test, y_train, y_test]
+    return datasets_list
+
+def create_model(datasets_list: list, parameters: Dict) -> TabularPredictor | RandomForestRegressor:
+    if parameters["model_creation"]:
+        return create_autogluon_model(datasets_list[0], parameters)
     else:
-        logger.info("Challenger model is not better than the champion model.")
-    pass
+        return create_rf_model(datasets_list[2], datasets_list[4], parameters)
+
+
+def compare_models(challenger_model:TabularPredictor | RandomForestRegressor, datasets_list: list, parameters:Dict) -> None:
+    models_path = 'data\\06_models\\champion'
+    rf_champion = os.path.join(models_path, "random_forest.pickle")
+    tabular_champion = os.path.join(models_path, "predictor.pkl")
+    logger.info(f"rf path {os.path.isfile(rf_champion)}")
+    logger.info(f"tabular path {os.path.isfile(tabular_champion)}")
+
+    if os.path.isfile(rf_champion) and parameters["model_creation"]:
+        with open(rf_champion, 'rb') as file:
+            rf_model = pickle.load(file)
+        rf_champion_pred = rf_model.predict(datasets_list[3])
+        r2_rf_champion = r2_score(datasets_list[5], rf_champion_pred)
+
+        challenger_model_pred = challenger_model.evaluate(datasets_list[1])
+        r2_tabular_challenger = challenger_model_pred.get('r2')
+
+        if r2_rf_champion>r2_tabular_challenger:
+            logger.info("Champion model is better than the challenger model.")
+        else:
+            logger.info("Challenger model is better than the champion model.")
+
+    elif os.path.isfile(rf_champion) and not parameters["model_creation"]:
+        with open(rf_champion, 'rb') as file:
+            rf_model = pickle.load(file)
+        
+        rf_champion_pred = rf_model.predict(datasets_list[3])
+        r2_rf_champion = r2_score(datasets_list[5], rf_champion_pred)
+
+        rf_challenger_pred = challenger_model.predict(datasets_list[3])
+        r2_rf_challenger = r2_score(datasets_list[5], rf_challenger_pred)
+
+        if r2_rf_champion > r2_rf_challenger:
+            logger.info("Champion model is better than the challenger model.")
+        else:
+            logger.info("Challenger model is better than the champion model.")
+    elif os.path.isfile(tabular_champion) and parameters["model_creation"]:
+        with open(tabular_champion, 'rb') as file:
+            tabular_model = pickle.load(file)
+        tabular_champion_pred = tabular_model.evaluate(datasets_list[1])
+        r2_tabular_champion = tabular_champion_pred.get('r2')
+
+        challenger_model_pred = challenger_model.evaluate(datasets_list[1])
+        r2_tabular_challenger = challenger_model_pred.get('r2')
+
+        if r2_tabular_champion > r2_tabular_challenger:
+            logger.info("Champion model is better than the challenger model.")
+        else:
+            logger.info("Challenger model is better than the champion model.")
+
+    elif os.path.isfile(tabular_champion) and not parameters["model_creation"]:
+        with open(tabular_champion, 'rb') as file:
+            tabular_model = pickle.load(file)
+        tabular_champion_pred = tabular_model.evaluate(datasets_list[1])
+        r2_tabular_champion = tabular_champion_pred.get('r2')
+
+        rf_challenger_pred = challenger_model.predict(datasets_list[3])
+        r2_rf_challenger = r2_score(datasets_list[5], rf_challenger_pred)
+
+        if r2_tabular_champion > r2_rf_challenger:
+            logger.info("Champion model is better than the challenger model.")
+        else:
+            logger.info("Challenger model is better than the champion model.")
+    else:
+        logger.info("Champion model does not exists, challenger model is new champion.")
