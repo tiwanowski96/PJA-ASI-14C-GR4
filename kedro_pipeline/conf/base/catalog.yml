@@ -72,3 +72,11 @@ enriched_rf_input_table:
 random_forest:
   type: pickle.PickleDataset
   filepath: data/06_models/random_forest.pickle
+
+champion:
+  type: pickle.PickleDataset
+  filepath: data/06_models/champion/champion.pickle
+
+champion_checked:
+  type: pickle.PickleDataset
+  filepath: data/06_models/champion/champion.pickle

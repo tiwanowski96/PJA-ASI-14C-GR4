@@ -20,8 +20,8 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=compare_models,
-                inputs=["challenger", "datasets_list", "params:models_options"],
-                outputs=None,
+                inputs=["challenger", "champion", "datasets_list", "params:models_options"],
+                outputs="champion_checked",
                 name="compare_models",
             )
         ]

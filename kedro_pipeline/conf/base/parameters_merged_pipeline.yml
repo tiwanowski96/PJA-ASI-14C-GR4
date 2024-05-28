@@ -1,0 +1,33 @@
+models_options:
+  # split_data parameters
+  test_size: "${runtime_params:test_size, 0.2}"
+  random_state: "${runtime_params:random_state, 3}"
+  features:
+    - Sex
+    - Length
+    - Diameter
+    - Height
+    - Weight
+    - Shucked Weight
+    - Viscera Weight
+    - Shell Weight
+    - Age
+    - Volume
+    - Weight proportion
+    - Shucked proportion
+    - Viscera proportion
+    - Shell proportion
+    - Shell area
+  # create_rf_model parameters
+  max_depth: "${runtime_params:max_depth, 8}"
+  max_features: "${runtime_params:max_features, 'sqrt'}"
+  n_estimators: "${runtime_params:n_estimators, 125}"
+  min_samples_leaf: "${runtime_params:min_samples_leaf, 2}"
+  min_samples_split: "${runtime_params:min_samples_split, 7}"
+    # params for autogluon predictor
+  target_column: "${runtime_params:target_column, Age}"
+  path: "data\\06_models"
+  problem_type: "${runtime_params:problem_type, regression}"
+  eval_metric: "${runtime_params:eval_metric, r2}"
+  presets: "${runtime_params:presets, good_quality}"
+  model_creation: "${runtime_params:model_creation, 'True'}"
