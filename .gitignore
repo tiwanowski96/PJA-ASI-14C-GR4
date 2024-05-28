@@ -164,3 +164,4 @@ kedro_pipeline/data/**
 !.gitkeep
 wandb/** 
 kedro_pipeline/wandb/**
+kedro_pipeline/data/06_models/champion/champion.pickle
