@@ -1,6 +1,6 @@
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import champion_loader,compare_models,split_data_for_autogluon,model_chooser,create_autogluon_model, evaluate_autogluon_model,split_data, create_rf_model, get_cross_validation_metrics, get_model_metrics, create_model
+from .nodes import compare_models,split_data, create_model,load_champion_model
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -20,9 +20,16 @@ def create_pipeline(**kwargs) -> Pipeline:
             ),
             node(
                 func=compare_models,
-                inputs=["challenger", "champion", "datasets_list", "params:models_options"],
-                outputs="champion_checked",
+                inputs=["challenger","champion","datasets_list", "params:models_options"],
+                outputs=None,
                 name="compare_models",
+            )
+            ,
+            node(
+                func=load_champion_model,
+                inputs=None,
+                outputs='champion',
+                name="champion_model",
             )
         ]
     )
