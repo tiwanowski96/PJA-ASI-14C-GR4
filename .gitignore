@@ -165,3 +165,4 @@ kedro_pipeline/data/**
 wandb/** 
 kedro_pipeline/wandb/**
 kedro_pipeline/data/06_models/champion/champion.pickle
+kedro_pipeline/champion.pickle
