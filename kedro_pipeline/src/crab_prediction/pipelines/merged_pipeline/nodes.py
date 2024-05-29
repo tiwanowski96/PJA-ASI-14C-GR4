@@ -186,7 +186,7 @@ def load_champion_model() -> Union[TabularPredictor, RandomForestRegressor, str]
     models_path = "data//06_models//champion"
     champion_model_path = os.path.join(models_path, "champion.pickle")
     if os.path.isfile(champion_model_path):
-        with open(champion_model_path, 'rb', encoding="utf-8") as file:
+        with open(champion_model_path, 'rb') as file:
             champion_model = pickle.load(file)
         return champion_model
     else:
