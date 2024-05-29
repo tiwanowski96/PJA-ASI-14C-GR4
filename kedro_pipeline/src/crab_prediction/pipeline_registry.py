@@ -24,7 +24,7 @@ def register_pipelines() -> Dict[str, Pipeline]:
     # pipelines = find_pipelines()
     # pipelines["__default__"] = sum(pipelines.values())
     return {
-        "__default__": data_processing_pipeline + data_science_pipeline,
+        "__default__": data_processing_pipeline + merged_pipeline,
         "auto_ml": data_processing_pipeline + autogluon_pipeline,
-        "merged": data_processing_pipeline + merged_pipeline
+        "raw": data_processing_pipeline + data_science_pipeline
     }
