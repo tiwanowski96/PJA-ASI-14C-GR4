@@ -3,6 +3,8 @@ from typing import Dict, Tuple
 import pandas as pd
 import numpy as np
 import logging
+import wandb
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -41,6 +43,20 @@ def create_autogluon_model(train_set: pd.DataFrame, parameters: Dict) -> Tabular
 def evaluate_autogluon_model(predicator: TabularPredictor, test_set: pd.DataFrame):
 
     leaderboards = predicator.leaderboard(test_set)
+
+    # Set columns and data apart
+    leaderboards_cols = leaderboards.columns.tolist()
+    leaderboards_rows = leaderboards.to_records(index=False).tolist()
+
+    # Log in to W&B
+    wandb.login(key=os.getenv('WANDB_API_KEY'))
+
+    run = wandb.init(project="CrabAgePredictionProject", name=f"Autogluon leaderboards table")
+    my_table = wandb.Table(columns=leaderboards_cols, data=leaderboards_rows)
+    run.log({"Table Name": my_table})
+
+    wandb.finish()
+
     metrics_dic = predicator.evaluate(test_set, silent=True)
 
     logger.info(

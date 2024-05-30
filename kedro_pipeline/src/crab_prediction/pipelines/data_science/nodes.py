@@ -8,6 +8,7 @@ import numpy as np
 import os
 import math
 import wandb
+import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -61,13 +62,15 @@ def get_cross_validation_metrics(model: RandomForestRegressor, X_train: np.ndarr
 
     # Launch 2 simulated experiments
     total_runs = 1
+    today_date = datetime.datetime.now()
+    today_date_formated = today_date.strftime("%Y-%m-%d")
     for run in range(total_runs):
         # 🐝 1️⃣ Start a new run to track this script
         wandb.init(
         # Set the project where this run will be logged
         project="CrabAgePredictionProject", 
         # We pass a run name (otherwise it’ll be randomly assigned, like sunshine-lollypop-10)
-        name=f"experiment_{run+1}", 
+        name=f"rf_r{run+1}_{today_date_formated}", 
         # Track hyperparameters and run metadata
         config={
         "architecture": "RandomForestRegressor",
