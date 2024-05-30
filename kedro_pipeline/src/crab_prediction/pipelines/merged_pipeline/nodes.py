@@ -182,8 +182,8 @@ def champion_loader(my_bools: bool) -> Dict[str, Any]:
 #         logger.info("Challenger model is not better than the champion model.")
 #     pass
 
-def load_champion_model() -> Union[TabularPredictor, RandomForestRegressor, None]:
-    models_path = r'kedro_pipeline/data/06_models/champion'
+def load_champion_model() -> Union[TabularPredictor, RandomForestRegressor, str]:
+    models_path = "data//06_models//champion"
     champion_model_path = os.path.join(models_path, "champion.pickle")
     if os.path.isfile(champion_model_path):
         with open(champion_model_path, 'rb') as file:
@@ -205,82 +205,71 @@ def create_model(datasets_list: list, parameters: Dict) -> TabularPredictor | Ra
         return create_rf_model(datasets_list[2], datasets_list[4], parameters)
 
 
-def compare_models(challenger_model:TabularPredictor | RandomForestRegressor, champion_model:TabularPredictor | RandomForestRegressor | None, datasets_list: list, parameters:Dict) -> None:
-    models_path = r'kedro_pipeline/data/06_models/champion'
-    # rf_champion = os.path.join(models_path, "random_forest.pickle")
-    # tabular_champion = os.path.join(models_path, "learner.pkl")
-    # logger.info(f"rf path {os.path.isfile(rf_champion)}")
-    # logger.info(f"tabular path {os.path.isfile(tabular_champion)}")
-    if champion_model == "":
-        if isinstance(champion_model, RandomForestRegressor) and parameters["model_creation"]:
+def compare_models(challenger_model:TabularPredictor | RandomForestRegressor, champion_model:TabularPredictor | RandomForestRegressor | str, datasets_list: list, parameters:Dict) -> TabularPredictor | RandomForestRegressor:
+  
 
-            rf_champion_pred = champion_model.predict(datasets_list[3])
-            r2_rf_champion = r2_score(datasets_list[5], rf_champion_pred)
+    if isinstance(champion_model, RandomForestRegressor) and parameters["model_creation"]:
 
-            if isinstance(champion_model, RandomForestRegressor):
-                logger.info("JEST RF")
-            logger.info(type(champion_model))
+        rf_champion_pred = champion_model.predict(datasets_list[3])
+        r2_rf_champion = r2_score(datasets_list[5], rf_champion_pred)
 
-            challenger_model_pred = challenger_model.evaluate(datasets_list[1])
-            r2_tabular_challenger = challenger_model_pred.get('r2')
+        challenger_model_pred = challenger_model.evaluate(datasets_list[1])
+        r2_tabular_challenger = challenger_model_pred.get('r2')
 
-            if r2_rf_champion>r2_tabular_challenger:
-                logger.info("Champion model is better than the challenger model.")
-                return champion_model
-            else:
-                logger.info("Challenger model is better than the champion model.")
-                return challenger_model
+        if r2_rf_champion>r2_tabular_challenger:
+            logger.info("Champion model is better than the challenger model.")
+            return champion_model
+        else:
+            logger.info("Challenger model is better than the champion model.")
+            return challenger_model
 
-        elif isinstance(champion_model, RandomForestRegressor) and not parameters["model_creation"]:
+    elif isinstance(champion_model, RandomForestRegressor) and not parameters["model_creation"]:
 
-            
-            rf_champion_pred = champion_model.predict(datasets_list[3])
-            r2_rf_champion = r2_score(datasets_list[5], rf_champion_pred)
+        
+        rf_champion_pred = champion_model.predict(datasets_list[3])
+        r2_rf_champion = r2_score(datasets_list[5], rf_champion_pred)
 
-            rf_challenger_pred = challenger_model.predict(datasets_list[3])
-            r2_rf_challenger = r2_score(datasets_list[5], rf_challenger_pred)
-            logger.info(f"r2_rf_challenger: {r2_rf_challenger}, r2_rf_champion: {r2_rf_champion}")
+        rf_challenger_pred = challenger_model.predict(datasets_list[3])
+        r2_rf_challenger = r2_score(datasets_list[5], rf_challenger_pred)
+        logger.info(f"r2_rf_challenger: {r2_rf_challenger}, r2_rf_champion: {r2_rf_champion}")
 
-            if r2_rf_champion > r2_rf_challenger:
-                logger.info("Champion model is better than the challenger model.")
-                return champion_model
-            else:
-                logger.info("Challenger model is better than the champion model.")
-                return challenger_model
+        if r2_rf_champion > r2_rf_challenger:
+            logger.info("Champion model is better than the challenger model.")
+            return champion_model
+        else:
+            logger.info("Challenger model is better than the champion model.")
+            return challenger_model
 
-        elif isinstance(champion_model, TabularPredictor) and parameters["model_creation"]:
+    elif isinstance(champion_model, TabularPredictor) and parameters["model_creation"]:
 
-            tabular_champion_pred = champion_model.evaluate(datasets_list[1])
-            r2_tabular_champion = tabular_champion_pred.get('r2')
+        tabular_champion_pred = champion_model.evaluate(datasets_list[1])
+        r2_tabular_champion = tabular_champion_pred.get('r2')
 
-            if isinstance(champion_model, TabularPredictor):
-                logger.info("JEST Tabular")
-            logger.info(type(champion_model))
 
-            challenger_model_pred = challenger_model.evaluate(datasets_list[1])
-            r2_tabular_challenger = challenger_model_pred.get('r2')
+        challenger_model_pred = challenger_model.evaluate(datasets_list[1])
+        r2_tabular_challenger = challenger_model_pred.get('r2')
 
-            if r2_tabular_champion > r2_tabular_challenger:
-                logger.info("Champion model is better than the challenger model.")
-                return champion_model
-            else:
-                logger.info("Challenger model is better than the champion model.")
-                return challenger_model
+        if r2_tabular_champion > r2_tabular_challenger:
+            logger.info("Champion model is better than the challenger model.")
+            return champion_model
+        else:
+            logger.info("Challenger model is better than the champion model.")
+            return challenger_model
 
-        elif isinstance(champion_model, TabularPredictor) and not parameters["model_creation"]:
-            tabular_champion_pred = champion_model.evaluate(datasets_list[1])
-            r2_tabular_champion = tabular_champion_pred.get('r2')
+    elif isinstance(champion_model, TabularPredictor) and not parameters["model_creation"]:
+        tabular_champion_pred = champion_model.evaluate(datasets_list[1])
+        r2_tabular_champion = tabular_champion_pred.get('r2')
 
-            rf_challenger_pred = challenger_model.predict(datasets_list[3])
-            r2_rf_challenger = r2_score(datasets_list[5], rf_challenger_pred)
+        rf_challenger_pred = challenger_model.predict(datasets_list[3])
+        r2_rf_challenger = r2_score(datasets_list[5], rf_challenger_pred)
 
-            logger.info(f"r2_rf_challenger: {r2_rf_challenger}, r2_rf_champion: {r2_tabular_champion}")
-            if r2_tabular_champion > r2_rf_challenger:
-                logger.info("Champion model is better than the challenger model.")
-                return champion_model
-            else:
-                logger.info("Challenger model is better than the champion model.")
-                return challenger_model
+        logger.info(f"r2_rf_challenger: {r2_rf_challenger}, r2_rf_champion: {r2_tabular_champion}")
+        if r2_tabular_champion > r2_rf_challenger:
+            logger.info("Champion model is better than the challenger model.")
+            return champion_model
+        else:
+            logger.info("Challenger model is better than the champion model.")
+            return challenger_model
     else:
         logger.info("Champion model does not exists, challenger model is new champion.")
         return challenger_model

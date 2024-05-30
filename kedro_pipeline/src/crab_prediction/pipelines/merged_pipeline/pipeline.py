@@ -19,18 +19,18 @@ def create_pipeline(**kwargs) -> Pipeline:
                 name="create_challenger_node",
             ),
             node(
-                func=compare_models,
-                inputs=["challenger","champion","datasets_list", "params:models_options"],
-                outputs=None,
-                name="compare_models",
-            )
-            ,
-            node(
                 func=load_champion_model,
                 inputs=None,
                 outputs='champion',
                 name="champion_model",
+            ),
+            node(
+                func=compare_models,
+                inputs=["challenger","champion","datasets_list", "params:models_options"],
+                outputs="champion_checked",
+                name="compare_models",
             )
+
         ]
     )
 
