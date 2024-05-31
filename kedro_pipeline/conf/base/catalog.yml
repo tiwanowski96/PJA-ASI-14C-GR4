@@ -65,6 +65,10 @@ prepared_crabs:
   type: pandas.ParquetDataset
   filepath: data/02_intermediate/prepared_crabs.pq
 
+scaler:
+  type: pickle.PickleDataset
+  filepath: data/02_intermediate/scaler.pickle 
+
 enriched_rf_input_table:
   type: pandas.ParquetDataset
   filepath: data/03_primary/enriched_rf_input_table.pq
@@ -73,9 +77,9 @@ random_forest:
   type: pickle.PickleDataset
   filepath: data/06_models/random_forest.pickle
 
-champion:
-  type: pickle.PickleDataset
-  filepath: data/06_models/champion/champion.pickle
+# champion:
+#   type: pickle.PickleDataset
+#   filepath: data/06_models/champion/champion.pickle
 
 champion_checked:
   type: pickle.PickleDataset
