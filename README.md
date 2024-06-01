@@ -6,7 +6,7 @@
 - Patryk Polnik s22515
 - Tomasz Iwanowski s18438
 
-## Instrukcja uruchomienia środowiska
+## Environment set up
 1. Download and install [Miniconda](https://docs.anaconda.com/free/miniconda/index.html)
 2. Download file `environment.yml` from catalog `env`
 3. In terminal use command `conda env create -f environment.yml`
