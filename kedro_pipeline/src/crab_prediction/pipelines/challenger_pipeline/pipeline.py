@@ -1,6 +1,6 @@
 from kedro.pipeline import Pipeline, node, pipeline
 
-from .nodes import compare_models,split_data, create_model,load_champion_model
+from .nodes import split_data, create_model
 
 
 def create_pipeline(**kwargs) -> Pipeline:
@@ -17,20 +17,7 @@ def create_pipeline(**kwargs) -> Pipeline:
                 inputs=["datasets_list", "params:models_options"],
                 outputs="challenger",
                 name="create_challenger_node",
-            ),
-            node(
-                func=load_champion_model,
-                inputs=None,
-                outputs='champion',
-                name="champion_model",
-            ),
-            node(
-                func=compare_models,
-                inputs=["challenger","champion","datasets_list", "params:models_options"],
-                outputs="champion_checked",
-                name="compare_models",
             )
-
         ]
     )
 

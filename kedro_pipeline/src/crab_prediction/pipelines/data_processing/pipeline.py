@@ -15,7 +15,7 @@ def create_pipeline(**kwargs) -> Pipeline:
             node(
                 func=prepare_cleaned_data,
                 inputs="cleaned_crabs",
-                outputs="prepared_crabs",
+                outputs=["prepared_crabs", "scaler"],
                 name="prepare_cleaned_crabs_node",
             ),
             node(

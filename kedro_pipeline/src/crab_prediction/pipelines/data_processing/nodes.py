@@ -20,7 +20,7 @@ def clean_Data(dataframe: pd.DataFrame) -> pd.DataFrame:
     return dataframe
 
 
-def prepare_cleaned_data(data_cleaned: pd.DataFrame) -> pd.DataFrame:
+def prepare_cleaned_data(data_cleaned: pd.DataFrame):
 
     # standarization part
 
@@ -43,7 +43,7 @@ def prepare_cleaned_data(data_cleaned: pd.DataFrame) -> pd.DataFrame:
     prepared_dataframe = pd.concat([encoded_dataframe, scaled_dataframe.drop(columns=cols_to_encode)], axis=1)
     
 
-    return prepared_dataframe
+    return prepared_dataframe, scaler
 
 
 # Input: dataframe for random forest
