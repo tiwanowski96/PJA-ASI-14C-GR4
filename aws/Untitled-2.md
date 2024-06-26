@@ -1,0 +1,352 @@
+```python
+import boto3
+import pandas as pd
+
+bucket_name = '905418408481-pja-asi-14c-gr4'
+
+s3_client = boto3.client('s3')
+s3_client.download_file(bucket_name, 'CrabAgePrediction.csv', 'CrabAgePrediction.csv')
+
+data = pd.read_csv('CrabAgePrediction.csv')
+```
+
+
+```python
+print(data.info())
+print(data.describe())
+print(data.isnull().sum())
+```
+
+    <class 'pandas.core.frame.DataFrame'>
+    RangeIndex: 3893 entries, 0 to 3892
+    Data columns (total 9 columns):
+     #   Column          Non-Null Count  Dtype  
+    ---  ------          --------------  -----  
+     0   Sex             3893 non-null   object 
+     1   Length          3893 non-null   float64
+     2   Diameter        3893 non-null   float64
+     3   Height          3893 non-null   float64
+     4   Weight          3893 non-null   float64
+     5   Shucked Weight  3893 non-null   float64
+     6   Viscera Weight  3893 non-null   float64
+     7   Shell Weight    3893 non-null   float64
+     8   Age             3893 non-null   int64  
+    dtypes: float64(7), int64(1), object(1)
+    memory usage: 273.9+ KB
+    None
+                Length     Diameter       Height       Weight  Shucked Weight  \
+    count  3893.000000  3893.000000  3893.000000  3893.000000     3893.000000   
+    mean      1.311306     1.020893     0.349374    23.567275       10.207342   
+    std       0.300431     0.248233     0.104976    13.891201        6.275275   
+    min       0.187500     0.137500     0.000000     0.056699        0.028349   
+    25%       1.125000     0.875000     0.287500    12.672227        5.343881   
+    50%       1.362500     1.062500     0.362500    22.792998        9.539607   
+    75%       1.537500     1.200000     0.412500    32.786197       14.273973   
+    max       2.037500     1.625000     2.825000    80.101512       42.184056   
+    
+           Viscera Weight  Shell Weight          Age  
+    count     3893.000000   3893.000000  3893.000000  
+    mean         5.136546      6.795844     9.954791  
+    std          3.104133      3.943392     3.220967  
+    min          0.014175      0.042524     1.000000  
+    25%          2.664853      3.713785     8.000000  
+    50%          4.861939      6.662133    10.000000  
+    75%          7.200773      9.355335    11.000000  
+    max         21.545620     28.491248    29.000000  
+    Sex               0
+    Length            0
+    Diameter          0
+    Height            0
+    Weight            0
+    Shucked Weight    0
+    Viscera Weight    0
+    Shell Weight      0
+    Age               0
+    dtype: int64
+
+
+
+```python
+data['Sex'] = data['Sex'].map({'M': 0, 'F': 1, 'I': 2})
+```
+
+
+```python
+from sklearn.model_selection import train_test_split
+
+X = data.drop('Age', axis=1)
+y = data['Age']
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.35, random_state=0)
+```
+
+
+```python
+train_data = pd.concat([y_train.reset_index(drop=True), X_train.reset_index(drop=True)], axis=1)
+test_data = pd.concat([y_test.reset_index(drop=True), X_test.reset_index(drop=True)], axis=1)
+
+train_data.to_csv('train_data.csv', index=False, header=False)
+test_data.to_csv('test_data.csv', index=False, header=False)
+```
+
+
+```python
+s3_client.upload_file('train_data.csv', bucket_name, 'train/train_data.csv')
+s3_client.upload_file('test_data.csv', bucket_name, 'test/test_data.csv')
+```
+
+
+```python
+import sagemaker
+
+container = sagemaker.image_uris.retrieve(
+    framework='xgboost', 
+    region=boto3.Session().region_name, 
+    version='1.7-1'
+)
+```
+
+    INFO:sagemaker.image_uris:Ignoring unnecessary instance type: None.
+
+
+
+```python
+from sagemaker import get_execution_role
+from sagemaker.estimator import Estimator
+
+hyperparameters = {
+        "max_depth":"5",
+        "eta":"0.2",
+        "gamma":"4",
+        "min_child_weight":"6",
+        "subsample":"0.7",
+        "objective":"reg:squarederror",
+        "num_round":"50"
+}
+
+xgb_estimator = Estimator(
+    image_uri=container,
+    role=get_execution_role(),
+    instance_count=1,
+    instance_type='ml.m4.xlarge',
+    output_path=f's3://{bucket_name}/output',
+    hyperparameters=hyperparameters
+)
+```
+
+
+```python
+from sagemaker.inputs import TrainingInput
+```
+
+
+```python
+train_input = TrainingInput(f's3://{bucket_name}/train/train_data.csv', content_type='csv')
+test_input = TrainingInput(f's3://{bucket_name}/test/test_data.csv', content_type='csv')
+
+xgb_estimator.fit({'train': train_input, 'validation': test_input})
+```
+
+    INFO:sagemaker:Creating training-job with name: sagemaker-xgboost-2024-06-20-06-31-49-957
+
+
+    2024-06-20 06:31:50 Starting - Starting the training job...
+    2024-06-20 06:32:09 Starting - Preparing the instances for training...
+    2024-06-20 06:32:39 Downloading - Downloading input data...
+    2024-06-20 06:33:14 Downloading - Downloading the training image......
+    2024-06-20 06:34:04 Training - Training image download completed. Training in progress...[34m[2024-06-20 06:34:27.120 ip-10-0-113-40.eu-west-1.compute.internal:7 INFO utils.py:28] RULE_JOB_STOP_SIGNAL_FILENAME: None[0m
+    [34m[2024-06-20 06:34:27.142 ip-10-0-113-40.eu-west-1.compute.internal:7 INFO profiler_config_parser.py:111] User has disabled profiler.[0m
+    [34m[2024-06-20:06:34:27:INFO] Imported framework sagemaker_xgboost_container.training[0m
+    [34m[2024-06-20:06:34:27:INFO] Failed to parse hyperparameter objective value reg:squarederror to Json.[0m
+    [34mReturning the value itself[0m
+    [34m[2024-06-20:06:34:27:INFO] No GPUs detected (normal if no gpus installed)[0m
+    [34m[2024-06-20:06:34:27:INFO] Running XGBoost Sagemaker in algorithm mode[0m
+    [34m[2024-06-20:06:34:27:INFO] Determined 0 GPU(s) available on the instance.[0m
+    [34m[2024-06-20:06:34:27:INFO] Determined delimiter of CSV input is ','[0m
+    [34m[2024-06-20:06:34:27:INFO] Determined delimiter of CSV input is ','[0m
+    [34m[2024-06-20:06:34:27:INFO] File path /opt/ml/input/data/train of input files[0m
+    [34m[2024-06-20:06:34:27:INFO] Making smlinks from folder /opt/ml/input/data/train to folder /tmp/sagemaker_xgboost_input_data[0m
+    [34m[2024-06-20:06:34:27:INFO] creating symlink between Path /opt/ml/input/data/train/train_data.csv and destination /tmp/sagemaker_xgboost_input_data/train_data.csv-2160114473473545948[0m
+    [34m[2024-06-20:06:34:27:INFO] files path: /tmp/sagemaker_xgboost_input_data[0m
+    [34m[2024-06-20:06:34:27:INFO] Determined delimiter of CSV input is ','[0m
+    [34m[2024-06-20:06:34:27:INFO] File path /opt/ml/input/data/validation of input files[0m
+    [34m[2024-06-20:06:34:27:INFO] Making smlinks from folder /opt/ml/input/data/validation to folder /tmp/sagemaker_xgboost_input_data[0m
+    [34m[2024-06-20:06:34:27:INFO] creating symlink between Path /opt/ml/input/data/validation/test_data.csv and destination /tmp/sagemaker_xgboost_input_data/test_data.csv-7456971214571399489[0m
+    [34m[2024-06-20:06:34:27:INFO] files path: /tmp/sagemaker_xgboost_input_data[0m
+    [34m[2024-06-20:06:34:27:INFO] Determined delimiter of CSV input is ','[0m
+    [34m[2024-06-20:06:34:27:INFO] Single node training.[0m
+    [34m[2024-06-20:06:34:27:INFO] Train matrix has 2530 rows and 8 columns[0m
+    [34m[2024-06-20:06:34:27:INFO] Validation matrix has 1363 rows[0m
+    [34m[2024-06-20 06:34:27.585 ip-10-0-113-40.eu-west-1.compute.internal:7 INFO json_config.py:92] Creating hook from json_config at /opt/ml/input/config/debughookconfig.json.[0m
+    [34m[2024-06-20 06:34:27.586 ip-10-0-113-40.eu-west-1.compute.internal:7 INFO hook.py:206] tensorboard_dir has not been set for the hook. SMDebug will not be exporting tensorboard summaries.[0m
+    [34m[2024-06-20 06:34:27.586 ip-10-0-113-40.eu-west-1.compute.internal:7 INFO hook.py:259] Saving to /opt/ml/output/tensors[0m
+    [34m[2024-06-20 06:34:27.586 ip-10-0-113-40.eu-west-1.compute.internal:7 INFO state_store.py:77] The checkpoint config file /opt/ml/input/config/checkpointconfig.json does not exist.[0m
+    [34m[2024-06-20:06:34:27:INFO] Debug hook created from config[0m
+    [34m[2024-06-20 06:34:27.592 ip-10-0-113-40.eu-west-1.compute.internal:7 INFO hook.py:427] Monitoring the collections: metrics[0m
+    [34m[2024-06-20 06:34:27.601 ip-10-0-113-40.eu-west-1.compute.internal:7 INFO hook.py:491] Hook is writing from the hook with pid: 7[0m
+    [34m[0]#011train-rmse:8.11662#011validation-rmse:8.19492[0m
+    [34m[1]#011train-rmse:6.63303#011validation-rmse:6.70544[0m
+    [34m[2]#011train-rmse:5.45674#011validation-rmse:5.52911[0m
+    [34m[3]#011train-rmse:4.55668#011validation-rmse:4.63525[0m
+    [34m[4]#011train-rmse:3.86688#011validation-rmse:3.95991[0m
+    [34m[5]#011train-rmse:3.33422#011validation-rmse:3.44260[0m
+    [34m[6]#011train-rmse:2.93150#011validation-rmse:3.05026[0m
+    [34m[7]#011train-rmse:2.64116#011validation-rmse:2.78217[0m
+    [34m[8]#011train-rmse:2.42310#011validation-rmse:2.57890[0m
+    [34m[9]#011train-rmse:2.27922#011validation-rmse:2.45236[0m
+    [34m[10]#011train-rmse:2.15203#011validation-rmse:2.35169[0m
+    [34m[11]#011train-rmse:2.06342#011validation-rmse:2.29284[0m
+    [34m[12]#011train-rmse:2.00144#011validation-rmse:2.24822[0m
+    [34m[13]#011train-rmse:1.95242#011validation-rmse:2.21613[0m
+    [34m[14]#011train-rmse:1.91575#011validation-rmse:2.20173[0m
+    [34m[15]#011train-rmse:1.88004#011validation-rmse:2.18828[0m
+    [34m[16]#011train-rmse:1.85369#011validation-rmse:2.18434[0m
+    [34m[17]#011train-rmse:1.84086#011validation-rmse:2.17560[0m
+    [34m[18]#011train-rmse:1.81987#011validation-rmse:2.17216[0m
+    [34m[19]#011train-rmse:1.81444#011validation-rmse:2.17269[0m
+    [34m[20]#011train-rmse:1.80219#011validation-rmse:2.17288[0m
+    [34m[21]#011train-rmse:1.78692#011validation-rmse:2.17301[0m
+    [34m[22]#011train-rmse:1.78032#011validation-rmse:2.17086[0m
+    [34m[23]#011train-rmse:1.77601#011validation-rmse:2.16989[0m
+    [34m[24]#011train-rmse:1.75980#011validation-rmse:2.17564[0m
+    [34m[25]#011train-rmse:1.75519#011validation-rmse:2.17672[0m
+    [34m[26]#011train-rmse:1.74493#011validation-rmse:2.17534[0m
+    [34m[27]#011train-rmse:1.73865#011validation-rmse:2.17327[0m
+    [34m[28]#011train-rmse:1.72217#011validation-rmse:2.17652[0m
+    [34m[29]#011train-rmse:1.71282#011validation-rmse:2.18009[0m
+    [34m[30]#011train-rmse:1.70239#011validation-rmse:2.18578[0m
+    [34m[31]#011train-rmse:1.67783#011validation-rmse:2.18667[0m
+    [34m[32]#011train-rmse:1.67260#011validation-rmse:2.18708[0m
+    [34m[33]#011train-rmse:1.66732#011validation-rmse:2.18369[0m
+    [34m[34]#011train-rmse:1.66296#011validation-rmse:2.18599[0m
+    [34m[35]#011train-rmse:1.64855#011validation-rmse:2.18763[0m
+    [34m[36]#011train-rmse:1.62873#011validation-rmse:2.19219[0m
+    [34m[37]#011train-rmse:1.62272#011validation-rmse:2.19191[0m
+    [34m[38]#011train-rmse:1.61722#011validation-rmse:2.18871[0m
+    [34m[39]#011train-rmse:1.60892#011validation-rmse:2.18628[0m
+    [34m[40]#011train-rmse:1.60158#011validation-rmse:2.18739[0m
+    [34m[41]#011train-rmse:1.59152#011validation-rmse:2.19187[0m
+    [34m[42]#011train-rmse:1.57757#011validation-rmse:2.19363[0m
+    [34m[43]#011train-rmse:1.57182#011validation-rmse:2.18870[0m
+    [34m[44]#011train-rmse:1.56082#011validation-rmse:2.18801[0m
+    [34m[45]#011train-rmse:1.55756#011validation-rmse:2.18277[0m
+    [34m[46]#011train-rmse:1.55185#011validation-rmse:2.18271[0m
+    [34m[47]#011train-rmse:1.54511#011validation-rmse:2.18273[0m
+    [34m[48]#011train-rmse:1.53390#011validation-rmse:2.18441[0m
+    [34m[49]#011train-rmse:1.52648#011validation-rmse:2.19050[0m
+    
+    2024-06-20 06:34:47 Uploading - Uploading generated training model
+    2024-06-20 06:34:47 Completed - Training job completed
+    Training seconds: 129
+    Billable seconds: 129
+
+
+
+```python
+predictor = xgb_estimator.deploy(
+    initial_instance_count=1,
+    instance_type='ml.m4.xlarge'
+)
+```
+
+    INFO:sagemaker:Creating model with name: sagemaker-xgboost-2024-06-20-06-35-35-394
+    INFO:sagemaker:Creating endpoint-config with name sagemaker-xgboost-2024-06-20-06-35-35-394
+    INFO:sagemaker:Creating endpoint with name sagemaker-xgboost-2024-06-20-06-35-35-394
+
+
+    ------!
+
+
+```python
+import numpy as np
+import pandas as pd
+import io
+import boto3
+
+sample_data = pd.DataFrame([
+    [0, 1.4375, 1.175, 0.4125, 24.6357155, 12.3320325, 5.5848515, 6.747181],
+    [1,1.6375,1.2875,0.5,42.354153,20.56756225,8.7599955,11.4815475],
+    [2,1.6375,1.2875,0.3625,35.436875,14.92601175,8.0229085,8.9300925],
+    [0,1.125,0.8375,0.35,13.11164375,4.649318,2.154562,4.252425]
+], columns=['Sex', 'Length', 'Diameter', 'Height', 'Weight', 'Shucked Weight', 'Viscera Weight', 'Shell Weight'])
+
+csv_buffer = io.StringIO()
+sample_data.to_csv(csv_buffer, index=False, header=False)
+
+payload = csv_buffer.getvalue().encode('utf-8')
+
+print(payload)
+
+runtime = boto3.client('sagemaker-runtime')
+
+response = runtime.invoke_endpoint(
+    EndpointName=predictor.endpoint_name,
+    ContentType='text/csv',
+    Body=payload
+)
+
+result = response['Body'].read().decode('utf-8')
+print(result)
+```
+
+    b'0,1.4375,1.175,0.4125,24.6357155,12.3320325,5.5848515,6.747181\n1,1.6375,1.2875,0.5,42.354153,20.56756225,8.7599955,11.4815475\n2,1.6375,1.2875,0.3625,35.436875,14.92601175,8.0229085,8.9300925\n0,1.125,0.8375,0.35,13.11164375,4.649318,2.154562,4.252425\n'
+    9.297533988952637
+    10.998446464538574
+    12.54384994506836
+    10.815958976745605
+    
+
+
+
+```python
+print(train_data.describe())
+print(test_data.describe())
+```
+
+                   Age          Sex       Length     Diameter       Height  \
+    count  2530.000000  2530.000000  2530.000000  2530.000000  2530.000000   
+    mean      9.922925     0.960474     1.308651     1.019111     0.348839   
+    std       3.225048     0.824700     0.300837     0.248631     0.108452   
+    min       2.000000     0.000000     0.275000     0.225000     0.037500   
+    25%       8.000000     0.000000     1.125000     0.875000     0.287500   
+    50%      10.000000     1.000000     1.362500     1.062500     0.350000   
+    75%      11.000000     2.000000     1.537500     1.200000     0.412500   
+    max      29.000000     2.000000     2.037500     1.625000     2.825000   
+    
+                Weight  Shucked Weight  Viscera Weight  Shell Weight  
+    count  2530.000000     2530.000000     2530.000000   2530.000000  
+    mean     23.446941       10.161693        5.108877      6.752722  
+    std      13.812752        6.251106        3.097543      3.895523  
+    min       0.226796        0.070874        0.056699      0.085048  
+    25%      12.661595        5.287182        2.668397      3.685435  
+    50%      22.665425        9.482908        4.819415      6.662133  
+    75%      32.630274       14.174750        7.154705      9.238393  
+    max      78.797435       42.184056       21.545620     28.491248  
+                  Age          Sex       Length     Diameter       Height  \
+    count  1363.00000  1363.000000  1363.000000  1363.000000  1363.000000   
+    mean     10.01394     0.925165     1.316233     1.024202     0.350367   
+    std       3.21372     0.829153     0.299724     0.247548     0.098230   
+    min       1.00000     0.000000     0.187500     0.137500     0.000000   
+    25%       8.00000     0.000000     1.137500     0.875000     0.287500   
+    50%      10.00000     1.000000     1.362500     1.062500     0.362500   
+    75%      11.00000     2.000000     1.550000     1.212500     0.412500   
+    max      25.00000     2.000000     2.000000     1.575000     1.287500   
+    
+                Weight  Shucked Weight  Viscera Weight  Shell Weight  
+    count  1363.000000     1363.000000     1363.000000   1363.000000  
+    mean     23.790638       10.292075        5.187907      6.875887  
+    std      14.038014        6.321319        3.116817      4.030960  
+    min       0.056699        0.028349        0.014175      0.042524  
+    25%      12.728925        5.414755        2.671940      3.791746  
+    50%      22.991445        9.709704        4.932813      6.662133  
+    75%      33.105129       14.472420        7.257472      9.397859  
+    max      80.101512       38.300174       16.726205     25.429502  
+
+
+
+```python
+predictor.delete_endpoint()
+```
+
+    INFO:sagemaker:Deleting endpoint configuration with name: sagemaker-xgboost-2024-06-20-06-35-35-394
+    INFO:sagemaker:Deleting endpoint with name: sagemaker-xgboost-2024-06-20-06-35-35-394
